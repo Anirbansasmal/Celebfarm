@@ -1,0 +1,25 @@
+const Images = {
+  introImage: require('../../Src/assets/images/introImage.png'),
+  PinkStairs: require('../../Src/assets/images/PinkCwStairs.png'),
+  TinyCharacter: require('../../Src/assets/images/TinyCharacter.png'),
+  line: require('../../Src/assets/images/line.png'),
+  line2: require('../../Src/assets/images/line2.png'),
+  google: require('../../Src/assets/images/google.png'),
+  apple: require('../../Src/assets/images/apple.png'),
+  profile: require('../../Src/assets/images/profile.png'),
+  dyning: require('../../Src/assets/images/dyning.png'),
+  lab: require('../../Src/assets/images/lab.png'),
+  content: require('../../Src/assets/images/content.png'),
+  learn_gray: require('../../Src/assets/images/learn_gray.png'),
+  learn: require('../../Src/assets/images/learn.png'),
+  user1: require('../../Src/assets/images/user1.png'),
+  user2: require('../../Src/assets/images/user2.png'),
+  adds: require('../../Src/assets/images/adds.png'),
+  Frame: require('../../Src/assets/images/Frame.png'),
+  SelectedDoc: require('../../Src/assets/images/selectedDoc.png'),
+  line3: require('../../Src/assets/images/line3.png'),
+  defaultProfile: require('../../Src/assets/images/defaultProfile.png'),
+  // content: require('../../Src/assets/images/content.png'),
+};
+
+export default Images;

@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">CelebFarm</string>
+<string name="facebook_app_id">1126124512266280</string>
+<string name="fb_login_protocol_scheme">fb1126124512266280</string>
+<string name="facebook_client_token">f649bc3a9d4abc4d266a9f67f0088ae6</string>
+</resources>
