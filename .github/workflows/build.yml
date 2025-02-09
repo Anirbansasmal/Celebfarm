@@ -69,28 +69,28 @@ jobs:
             ${{ runner.os }}-gradle-
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
-      - name: Execute Gradle build
-        run: |
-          cd android
-          ./gradlew build
       - name: Clean Android build
         run: |
           cd android
           ./gradlew clean
-      - name: Build Android JS Bundle
-        run: |
-          npx run package-android
-      - name: Delete Android build duplicate assets resource
-        run: npx run delete-pics
-      - name: Install bundler
+      - name: Execute Gradle build
         run: |
           cd android
-          gem install bundler
-      - name: Install gem plugins
-        run: |
-          cd android
-          bundle install
-      - name: Run fastlane
-        run: |
-          cd android
-          bundle exec fastlane build_qa
+          ./gradlew assembleRelease
+      # - name: Build Android JS Bundle
+      #   run: |
+      #     npx run package-android
+      # - name: Delete Android build duplicate assets resource
+      #   run: npx run delete-pics
+      # - name: Install bundler
+      #   run: |
+      #     cd android
+      #     gem install bundler
+      # - name: Install gem plugins
+      #   run: |
+      #     cd android
+      #     bundle install
+      # - name: Run fastlane
+      #   run: |
+      #     cd android
+      #     bundle exec fastlane build_qa
