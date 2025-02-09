@@ -6,7 +6,7 @@ jobs:
     name: iOS main Build
     runs-on: self-hosted
     steps:
-      - name: Show self-hosted machine information
+      - name: Show self-hosted machine infomation
         run: uname -a
       - name: Cancel previous runs
         uses: styfle/cancel-workflow-action@0.9.1
@@ -28,7 +28,8 @@ jobs:
           cd ios
           bundle exec pod install
       - name: Build iOS JS Bundle
-        run: yarn run package-ios
+        run: |
+          npx run package-ios
       - name: Install bundler
         run: |
           cd ios
@@ -45,7 +46,7 @@ jobs:
     name: Android main Build
     runs-on: self-hosted
     steps:
-      - name: Show self-hosted machine information
+      - name: Show self-hosted machine infomation
         run: uname -a
       - name: Cancel previous runs
         uses: styfle/cancel-workflow-action@0.9.1
@@ -57,8 +58,7 @@ jobs:
         run: npm install
       - name: Setup Android SDK
         uses: android-actions/setup-android@v2
-      - name: Cache Gradle
-        uses: actions/cache@v3
+      - uses: actions/cache@v3
         with:
           path: |
             ~/.gradle/caches
@@ -73,9 +73,10 @@ jobs:
           cd android
           ./gradlew build
       - name: Build Android JS Bundle
-        run: yarn run package-android
+        run: |
+          npx run package-android
       - name: Delete Android build duplicate assets resource
-        run: yarn run delete-pics
+        run: npx run delete-pics
       - name: Install bundler
         run: |
           cd android
