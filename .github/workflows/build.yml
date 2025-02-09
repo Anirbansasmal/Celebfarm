@@ -77,6 +77,7 @@ jobs:
         run: |
           cd android
           ./gradlew assembleRelease
+          
       # - name: Build Android JS Bundle
       #   run: |
       #     npx run package-android
