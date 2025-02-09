@@ -1,35 +1,84 @@
-name: Node.js CI
-
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-
+    branches: ['main']
 jobs:
-  build:
+  ios-build:
+    name: iOS main Build
     runs-on: ubuntu-latest
-
     steps:
-      # Check out the repository so the workflow can access your code
-      - name: Checkout repository
+      - name: Show self-hosted machine infomation
+        run: uname -a
+      - name: Cancel previous runs
+        uses: styfle/cancel-workflow-action@0.9.1
+      - name: Checkout repo from main branch
+        uses: actions/checkout@v3
+        with:
+          ref: main
+      - name: Install npm dependency
+        run: npm install --force
+      - name: Cache cocoapods
+        uses: actions/cache@v3
+        with:
+          path: /ios/Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+      - name: Install pod dependency
+        run: |
+          cd ios
+          bundle exec pod install
+      - name: Build iOS JS Bundle
+        run: |
+          npx run package-ios
+      - name: Install bundler
+        run: |
+          cd ios
+          gem install bundler
+      - name: Install gem plugins
+        run: |
+          cd ios
+          bundle install
+      - name: Run fastlane
+        run: |
+          cd ios
+          bundle exec fastlane build_testflight
+  
+  android-build:
+    name: Build Android App
+    runs-on: macos-latest
+    steps:
+      # Check out the repository
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      # Set up Node.js using the official action; this also caches your npm modules
+      # Set up Node.js (with caching for npm)
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '16'
           cache: 'npm'
 
-      # Install dependencies using npm; npm ci is recommended for clean, reproducible installs
+      # Install project dependencies
       - name: Install dependencies
         run: npm ci
 
-      # Run your tests as defined in your package.json file
-      - name: Run tests
-        run: npm test
+      # Bundle the JavaScript for Android (ensure you have a corresponding script in package.json)
+      - name: Bundle Android JS
+        run: npm run package-android
 
-      # Build your project (adjust this command if your build script is named differently)
-      - name: Build project
-        run: npm run build
+      # Set up the Android SDK (this action installs the required Android SDK components)
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v2
+
+      # Build the Android APK using Gradle
+      - name: Build Android APK
+        run: |
+          cd android
+          ./gradlew assembleRelease
+
+      # Upload the generated APK as an artifact
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: MyApp-APK
+          path: android/app/build/outputs/apk/release/*.apk
