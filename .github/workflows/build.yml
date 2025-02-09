@@ -26,7 +26,7 @@ jobs:
       - name: Install pod dependency
         run: |
           cd ios
-          bundle exec pod install
+          pod install
       - name: Build iOS JS Bundle
         run: |
           npx run package-ios
@@ -42,43 +42,54 @@ jobs:
         run: |
           cd ios
           bundle exec fastlane build_testflight
-  
   android-build:
-    name: Build Android App
-    runs-on: macos-latest
+    name: Android main Build
+    runs-on: self-hosted
     steps:
-      # Check out the repository
-      - name: Checkout code
+      - name: Show self-hosted machine infomation
+        run: uname -a
+      - name: Cancel previous runs
+        uses: styfle/cancel-workflow-action@0.9.1
+      - name: Checkout repo from main branch
         uses: actions/checkout@v3
-
-      # Set up Node.js (with caching for npm)
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
         with:
-          node-version: '16'
-          cache: 'npm'
-
-      # Install project dependencies
-      - name: Install dependencies
-        run: npm ci
-
-      # Bundle the JavaScript for Android (ensure you have a corresponding script in package.json)
-      - name: Bundle Android JS
-        run: npm run package-android
-
-      # Set up the Android SDK (this action installs the required Android SDK components)
+          ref: main
+      - name: Install npm dependency
+        run: npm install
       - name: Setup Android SDK
         uses: android-actions/setup-android@v2
-
-      # Build the Android APK using Gradle
-      - name: Build Android APK
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+      - name: Execute Gradle build
         run: |
           cd android
-          ./gradlew assembleRelease
-
-      # Upload the generated APK as an artifact
-      - name: Upload APK Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: MyApp-APK
-          path: android/app/build/outputs/apk/release/*.apk
+          ./gradlew build
+      - name: Clean Android build
+        run: |
+          cd android
+          ./gradlew clean
+      - name: Build Android JS Bundle
+        run: |
+          npx run package-android
+      - name: Delete Android build duplicate assets resource
+        run: npx run delete-pics
+      - name: Install bundler
+        run: |
+          cd android
+          gem install bundler
+      - name: Install gem plugins
+        run: |
+          cd android
+          bundle install
+      - name: Run fastlane
+        run: |
+          cd android
+          bundle exec fastlane build_qa
